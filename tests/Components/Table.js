@@ -30,10 +30,10 @@ export default class Table {
   async getTableData() {
     const columnNames = await this.page.getByRole('columnheader').allTextContents();
     const rows = await this.page.getByRole('row').filter({ has: this.page.getByRole('cell') }).all();
-    const usersData = await Promise.all(rows.map((item) => {
+    const tableData = await Promise.all(rows.map((item) => {
       return item.locator(this.page.getByRole('cell')).allTextContents();
     }));
-    const result = usersData.map((item) => {
+    const result = tableData.map((item) => {
       return item.reduce((acc, value, index) => {
         if (columnNames[index]) {
           acc[columnNames[index]] = value;
@@ -47,22 +47,22 @@ export default class Table {
     return result;
   }
 
-  async selectUsersOnPage(usersNumber) {
+  async selectItemsOnPage(itemsNumber) {
     const rows = await this.page.getByRole('row').filter({ has: this.page.getByRole('cell') }).all();
-    const usersOnPageCount = rows.length - 1;
-    let usersToSelect = usersNumber >= usersOnPageCount ? usersOnPageCount : usersNumber;
+    const itemsOnPageCount = rows.length - 1;
+    let itemsToSelect = itemsNumber >= itemsOnPageCount ? itemsOnPageCount : itemsNumber;
     const selectedIds = [];
     const tableHeaders = await this.getTableHeaders();
 
-    for (let i = 0; i < usersToSelect; i += 1) {
-      let userToSelect = await rows[i];
-      let userIdIndex = tableHeaders.findIndex((item) => item === 'Id');
-      let userToSelectId = await userToSelect.getByRole('cell').nth(userIdIndex).textContent();
-      await userToSelect.locator(this.page.getByRole('checkBox')).click();
-      selectedIds.push(userToSelectId);
+    for (let i = 0; i < itemsToSelect; i += 1) {
+      let itemToSelect = await rows[i]; // await убрать???
+      let itemIdIndex = tableHeaders.findIndex((item) => item === 'Id');
+      let itemToSelectId = await itemToSelect.getByRole('cell').nth(itemIdIndex).textContent();
+      await itemToSelect.locator(this.page.getByRole('checkBox')).click();
+      selectedIds.push(itemToSelectId);
     }
 
-    console.log('!!!!!!!!!!!!', selectedIds);
+    // console.log('!!!!!!!!!!!!', selectedIds);
     return selectedIds;
   }
 
@@ -74,4 +74,36 @@ export default class Table {
     return Number(selectedItemsCount);
   }
 
+  async deletSelectedItems() {
+    await this.deleteItemButton.click();
+  }
+
+  async findTableHeaderIndex(headerName) {
+    const tableHeaders = await this.getTableHeaders();
+
+    return tableHeaders.findIndex((item) => item === headerName);
+  }
+
+  async findItemById(idString) {
+    const idHeaderIndex = await this.findTableHeaderIndex('Id');
+    const rows = await this.page.getByRole('row').filter({ has: this.page.getByRole('cell') }).all();
+    const rowsOnPageCount = rows.length - 1;
+    console.log('!!!!!!!!! rowsOnPageCount: ', rowsOnPageCount);
+    let targetRowIndex;
+
+    for (let i = 0; i <= rowsOnPageCount; i += 1) {
+      let rowId = await rows[i].getByRole('cell').nth(idHeaderIndex).textContent();
+      console.log('i: ', i, 'rowId: ', rowId);
+      if (rowId === idString) {
+        targetRowIndex = i;
+        break;
+      }
+    }
+    
+    if (targetRowIndex >= 0) {
+      return rows[targetRowIndex].getByRole('cell').nth(idHeaderIndex);
+    } else {
+      return 'not found';
+    } 
+  }
 }
