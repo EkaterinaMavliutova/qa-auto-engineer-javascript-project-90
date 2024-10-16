@@ -24,3 +24,14 @@ test('all users on the page should have "First name", "Last name" and "Email"', 
   });
   // await expect(tableHeaders[1]).toBe('Id');
 });
+
+test('should be possible to delete users from the table', async ({ page }) => {
+  const logInPage = await startApp(page);
+  const taskManager = await logInPage.logIn();
+  const usersTab = await taskManager.goToUsersTab();
+
+  const selectedUsersIds = await usersTab.usersTable.selectUsersOnPage(2);
+  const selectedUsersCount = await usersTab.usersTable.getSelectedItemsNumber();
+  await expect(selectedUsersCount).toBe(2);
+  // console.log(`!!!!!!!SelectedUsersCount: ${selectedUsersCount}`);
+});
