@@ -1,14 +1,18 @@
+import Form from "./Form";
+import Pagination from "./Pagination";
+
 export default class Table {
   constructor(page) {
     this.page = page;
-    this.createButton = this.page.getByLabel('Create');
-    // this.exportButton = this.page.getByLabel('Export');
+    // this.paginationComponent = new Pagination(page);
+    this.createButton = this.page.getByLabel('Create', { exact: true });
     this.deleteItemButton = this.page.getByLabel('Delete');
     this.selectedItemsCounter = this.page.getByRole('heading', { name: /selected/i });
     this.unselectButton = this.page.getByLabel('Unselect');
-    this.itemCheckBox = this.page.getByTestId('CheckBoxOutlineBlankIcon');
-    this.itemsCounter = this.page.getByText(/\d+-\d+ of \d+/); //.textContent();
+    this.itemCheckBox = this.page.getByRole('checkBox');
+    this.itemsCounter = this.page.getByText(/\d+-\d+ of \d+/);
     this.tableComponent = this.page.getByRole('table');
+    this.selectAllItemsCheckBox = this.page.getByRole('columnheader').locator(this.itemCheckBox);
   }
 
   async clearItemsSelection() {
@@ -45,6 +49,19 @@ export default class Table {
 
 // console.log('!!!!!!!!!', result)
     return result;
+  }
+
+  async getItemDataById(itemIdString) {
+    const itemsOnPage = await this.getTableData();
+    const targetItemData = itemsOnPage.find((item) => item.Id === itemIdString);
+    console.log('!!!!!!!!!!!!tableData: ', itemsOnPage);
+    console.log('!!!!!!!!!!!!itemIdString: ', itemIdString);
+    console.log('!!!!!!!!!!!!targetItemData`: ', targetItemData);
+    if (targetItemData) {
+      return targetItemData;
+    }
+
+    return 'not found';
   }
 
   async selectItemsOnPage(itemsNumber) {
@@ -88,22 +105,39 @@ export default class Table {
     const idHeaderIndex = await this.findTableHeaderIndex('Id');
     const rows = await this.page.getByRole('row').filter({ has: this.page.getByRole('cell') }).all();
     const rowsOnPageCount = rows.length - 1;
-    console.log('!!!!!!!!! rowsOnPageCount: ', rowsOnPageCount);
+    // console.log('!!!!!!!!! rowsOnPageCount: ', rowsOnPageCount);
     let targetRowIndex;
 
     for (let i = 0; i <= rowsOnPageCount; i += 1) {
       let rowId = await rows[i].getByRole('cell').nth(idHeaderIndex).textContent();
-      console.log('i: ', i, 'rowId: ', rowId);
+      // console.log('i: ', i, 'rowId: ', rowId);
       if (rowId === idString) {
         targetRowIndex = i;
         break;
       }
     }
-    
+    // console.log('!!!!!!!!!!', targetRowIndex);
     if (targetRowIndex >= 0) {
       return rows[targetRowIndex].getByRole('cell').nth(idHeaderIndex);
     } else {
       return 'not found';
     } 
+  }
+
+  async selectAllItems() {
+    await this.selectAllItemsCheckBox.click();
+  }
+
+  async createNewItem(editableFields) {
+    await this.createButton.click();
+
+    return new Form(this.page, editableFields);
+  }
+
+  async editItemById(itemIdString, editableFields) {
+    const itemToEdit = await this.findItemById(itemIdString);
+    await itemToEdit.click();
+
+    return new Form(this.page, editableFields);
   }
 }
