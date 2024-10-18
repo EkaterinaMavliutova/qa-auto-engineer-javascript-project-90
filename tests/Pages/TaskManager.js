@@ -1,6 +1,7 @@
 import Header from '../Components/Header';
 import SideBar from '../Components/SideBar';
 import Users from './Users';
+import TaskStatuses from './TaskStatuses';
 
 export default class TaskManager {
   constructor(page) {
@@ -27,7 +28,7 @@ export default class TaskManager {
 
   async goToTaskStatusesTab() {
     await this.sideBar.taskStatusesTab.click();
-    // return new TaskStatuses(this.page);
+    return new TaskStatuses(this.page);
   }
 
   async goToTasksTab() {

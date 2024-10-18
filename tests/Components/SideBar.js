@@ -5,6 +5,6 @@ export default class SideBar {
     this.tasksTab = this.page.getByRole('menuitem').filter({ hasText: 'Tasks' });
     this.usersTab = this.page.getByRole('menuitem').filter({ hasText: 'Users' });
     this.labelsTab = this.page.getByRole('menuitem').filter({ hasText: 'Labels' });
-    this.taskStatusesTab = this.page.getByRole('menuitem').filter({ hasText: 'Tasks statuses' });
+    this.taskStatusesTab = this.page.getByRole('menuitem').filter({ hasText: 'Task statuses' });
   }
 }
