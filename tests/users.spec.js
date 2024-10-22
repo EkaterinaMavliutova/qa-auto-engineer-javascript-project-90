@@ -23,13 +23,12 @@ test('all users on the page should have "First name", "Last name" and "Email"', 
   const usersTab = await taskManager.goToUsersTab();
 
   const usersData = await usersTab.usersTable.getTableData();
-  // console.log('!!!!!!!!!!tableData: ', usersData);
+
   usersData.forEach((user) => {
     expect(user['First name']).toBeTruthy();
     expect(user['Last name']).toBeTruthy();
     expect(user['Email']).toBeTruthy();
   });
-  // await expect(tableHeaders[1]).toBe('Id');
 });
 
 test('should be possible to delete users from the table', async ({ page }) => {
@@ -49,11 +48,6 @@ test('should be possible to delete users from the table', async ({ page }) => {
     await expect(await usersTab.usersTable.findItemById(id)).toBe('not found');
   }
   await expect(usersAfter).toBe(usersBefore - usersToDeleteCount);
-
-  // const userById = await usersTab.usersTable.findItemById('3');
-  // console.log('userById: ', userById);
-  //   await userById.click();
-  // console.log(`!!!!!!!SelectedUsersCount: ${selectedUsersCount}`);
 });
 
 test('should be possible to delete all users from the table', async ({ page }) => {
@@ -85,8 +79,6 @@ test('should create new users', async ({ page }) => {
   await taskManager.goToUsersTab();
   const usersAfter = await usersTab.usersTable.getItemsNumber();
   const newUserData = await usersTab.usersTable.getItemDataById(newUserId);
-
-  // console.log('!!!!!!!!!!!!!!!!!!!newUserId: ', newUserId);
 
   expect(newUserData).toMatchObject({ Email: userData.email });
   expect(newUserData).toMatchObject({ 'First name': userData.firstName });
