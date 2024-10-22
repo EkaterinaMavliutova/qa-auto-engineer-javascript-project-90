@@ -3,11 +3,11 @@ export default class Form {
     this.page = page;
     this.saveButton = this.page.getByRole('button', { name: 'SAVE' });
     this.showItemInfoButton = this.page.getByRole('link', { name: 'SHOW' });
-    this.assignee = this.page.getByRole('comboBox', { name: 'Assignee' });
-    this.title = this.page.getByRole('textBox', { name: 'Title' });
-    this.content = this.page.getByRole('textBox', { name: 'Content' });
-    this.status = this.page.getByRole('comboBox', { name: 'Status' });
-    this.label = this.page.getByRole('comboBox', { name: 'Label' });
+    this.assigneeSearchList = this.page.getByRole('comboBox', { name: 'Assignee' });
+    this.titleTextBox = this.page.getByRole('textBox', { name: 'Title' });
+    this.contentTextBox = this.page.getByRole('textBox', { name: 'Content' });
+    this.statusDropDownList = this.page.getByRole('comboBox', { name: 'Status' });
+    this.labelDropDownList = this.page.getByRole('comboBox', { name: 'Label' });
   }
 
   async getInputValueByLabel(label) {
@@ -18,12 +18,43 @@ export default class Form {
     await this.saveButton.click();
   }
 
-  async fillInputByLabel(label, value) {
-    const isComboBox = await this[label].getAttribute('role') === 'combobox';
-    if (isComboBox) {
-      await this[label].selectOption(value);
-    } else {
-      await this[label].fill(value);
-    }
+  async fillInAssignee(value) {
+    await this.assigneeSearchList.click();
+    await this.assigneeSearchList.fill(value);
+    await this.page.getByText(value).click();
   }
+
+  async fillInTitle(value) {
+    await this.titleTextBox.fill(value);
+  }
+
+  async fillInContent(value) {
+    await this.contentTextBox.fill(value);
+  }
+
+  async fillInStatus(value) {
+    await this.statusDropDownList.click();
+    await this.page.getByRole('option').filter({ hasText: `${value}` }).click();
+  }
+
+  async fillInLabel(values) {
+    await this.labelDropDownList.click();
+
+    for (let i = 0; i < values.length; i += 1) {
+      await this.page.getByRole('option').filter({ hasText: `${values[i]}` }).click();
+    }
+    await this.page.getByRole('listbox').press('Tab');
+  }
+
+  // async fillInputByLabel(label, value) {
+  //   const lowerCaseLabel = label.toLowerCase(); 
+  //   console.log('!!!!!!!!!!label: ', label, '!!!!!!!!! this[label]: ', this[lowerCaseLabel]);
+  //   const isComboBox = await this[lowerCaseLabel].getAttribute('role') === 'combobox';
+  //   if (isComboBox) {
+  //     await this[lowerCaseLabel].click();
+  //     await this[lowerCaseLabel].fill(value); // selectOption(value);
+  //   } else {
+  //     await this[lowerCaseLabel].fill(value);
+  //   }
+  // }
 }
