@@ -1,10 +1,8 @@
 import Form from "./Form";
-import Pagination from "./Pagination";
 
 export default class Table {
   constructor(page) {
     this.page = page;
-    // this.paginationComponent = new Pagination(page);
     this.createButton = this.page.getByLabel('Create', { exact: true });
     this.deleteItemButton = this.page.getByLabel('Delete');
     this.selectedItemsCounter = this.page.getByRole('heading', { name: /selected/i });
@@ -54,9 +52,9 @@ export default class Table {
   async getItemDataById(itemIdString) {
     const itemsOnPage = await this.getTableData();
     const targetItemData = itemsOnPage.find((item) => item.Id === itemIdString);
-    console.log('!!!!!!!!!!!!tableData: ', itemsOnPage);
-    console.log('!!!!!!!!!!!!itemIdString: ', itemIdString);
-    console.log('!!!!!!!!!!!!targetItemData`: ', targetItemData);
+    // console.log('!!!!!!!!!!!!tableData: ', itemsOnPage);
+    // console.log('!!!!!!!!!!!!itemIdString: ', itemIdString);
+    // console.log('!!!!!!!!!!!!targetItemData`: ', targetItemData);
     if (targetItemData) {
       return targetItemData;
     }

@@ -3,6 +3,7 @@ import SideBar from '../Components/SideBar';
 import Users from './Users';
 import TaskStatuses from './TaskStatuses';
 import Labels from './Labels';
+import Tasks from './Tasks';
 
 export default class TaskManager {
   constructor(page) {
@@ -37,7 +38,7 @@ export default class TaskManager {
   async goToTasksTab() {
     await this.sideBar.tasksTab.click();
 
-    // return new Tasks(this.page);
+    return new Tasks(this.page);
   }
 
 };
