@@ -11,15 +11,18 @@ export default class Filter {
   }
 
   async filterByAssignee(assigneeEmail) {
-    await this.assigneeComboBox.selectOption(assigneeEmail);
+    await this.assigneeComboBox.click();
+    await this.page.getByRole('option').filter({ hasText: `${assigneeEmail}` }).click();
   }
 
   async filterByStatus(statusName) {
-    await this.statusComboBox.selectOption(statusName);
+    await this.statusComboBox.click();
+    await this.page.getByRole('option').filter({ hasText: `${statusName}` }).click();
   }
 
   async filterByLabel(labelName) {
-    await this.labelComboBox.selectOption(labelName);
+    await this.labelComboBox.click();
+    await this.page.getByRole('option').filter({ hasText: `${labelName}` }).click();
   }
 
   async clearAllFilters() {

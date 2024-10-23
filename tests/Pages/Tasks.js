@@ -9,7 +9,8 @@ export default class Tasks {
     this.showButton = this.page.getByRole('link', { name: 'Show' });
     this.deleteButton = this.page.getByRole('button', { name: 'DELETE' });
     this.filters = new Filter(page);
-    this.status = this.page.locator('css=div.MuiBox-root > h6');
+    this.statuses = this.page.locator('css=div.MuiBox-root.css-1xphtog');
+    this.tasks = this.page.getByRole('button').filter({ hasText: /Task/ });
   }
 
   async findTaskByTitle(taskTitle) {
@@ -60,5 +61,14 @@ export default class Tasks {
     const targetTask = await this.findTaskByTitle(taskTitle);
     await targetTask.locator(this.showButton).click();
     await this.deleteButton.click();
+  }
+
+  async createDefaultTask({ status, assigneeEmail, title, labels }) {
+    const newTaskForm = await this.createNewTask();
+    await newTaskForm.fillInAssignee(assigneeEmail);
+    await newTaskForm.fillInTitle(title);
+    await newTaskForm.fillInStatus(status);
+    await newTaskForm.fillInLabel(labels);
+    await newTaskForm.saveItem();
   }
 }
