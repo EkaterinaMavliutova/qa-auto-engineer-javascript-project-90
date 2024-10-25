@@ -33,6 +33,7 @@ export default class Tasks {
     } else {
       labels = [];
     }
+    await this.page.goBack();
 
     return {
       taskTitle,

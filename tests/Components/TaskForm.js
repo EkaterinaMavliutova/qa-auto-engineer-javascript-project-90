@@ -45,16 +45,4 @@ export default class Form {
     }
     await this.page.getByRole('listbox').press('Tab');
   }
-
-  // async fillInputByLabel(label, value) {
-  //   const lowerCaseLabel = label.toLowerCase(); 
-  //   console.log('!!!!!!!!!!label: ', label, '!!!!!!!!! this[label]: ', this[lowerCaseLabel]);
-  //   const isComboBox = await this[lowerCaseLabel].getAttribute('role') === 'combobox';
-  //   if (isComboBox) {
-  //     await this[lowerCaseLabel].click();
-  //     await this[lowerCaseLabel].fill(value); // selectOption(value);
-  //   } else {
-  //     await this[lowerCaseLabel].fill(value);
-  //   }
-  // }
 }
