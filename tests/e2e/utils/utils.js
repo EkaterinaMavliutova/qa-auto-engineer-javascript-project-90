@@ -1,4 +1,4 @@
-import LogIn from "./Pages/LogIn";
+import LogIn from "../../Pages/LogIn";
 
 const startApp = async (page) => {
   await page.goto('/');

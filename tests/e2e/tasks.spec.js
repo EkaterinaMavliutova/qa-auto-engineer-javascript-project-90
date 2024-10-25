@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import startApp from './utils';
+import startApp from '../utils';
 
 let logInPage;
 let taskManager;
@@ -70,6 +70,70 @@ test('should be possible to delete users from the table', async () => {
   await expect(await tasksTab.findTaskByTitle(taskToDeleteTitle)).toHaveCount(0);
 });
 
+test('should be possible to drag tasks between statuses', async ({ page }) => {
+  // test.setTimeout(100000);
+  // const additionalTaskData = {
+  //   title: 'Task 21',
+  //   assigneeEmail: 'jack@yahoo.com',
+  //   content: 'Task 21 description',
+  //   status: 'Published',
+  //   labels: ['feature', 'task'],
+  // };
+  // await tasksTab.createDefaultTask(taskData);
+  // await taskManager.goToTasksTab();
+  // await tasksTab.createDefaultTask(additionalTaskData);
+  // await taskManager.goToTasksTab();
+
+  // const sourceTask = await tasksTab.findTaskByTitle(taskData.title);
+  // const targetTask = await tasksTab.findTaskByTitle(additionalTaskData.title);
+  // const targetStatus = tasksTab.statuses.filter({ hasText: 'Draft'});
+  // // await sourceTask.dragTo(targetTask, { force: true });
+  // // await sourceTask.dragTo(targetStatus, { force: true });
+
+  // await sourceTask.hover({ force: true });
+  // await page.mouse.down();
+  // await targetStatus.hover({ force: true });
+  // await targetStatus.hover({ force: true });
+  // await page.mouse.up();
+
+  // const sourceTaskData = await tasksTab.getTaskDataByTitle(taskData.title);
+  // const targetTaskData = await tasksTab.getTaskDataByTitle(additionalTaskData.title);
+
+  // await expect(sourceTaskData.status).toEqual(targetTaskData.status);
+  // await expect(targetTaskData.status).toEqual(additionalTaskData.status);
+
+  // await page.locator('css=[data-rfd-drag-handle-draggable-id="1"]').hover({ force: true });
+  // await page.mouse.down();
+  // await page.locator('css=[data-rfd-drag-handle-draggable-id="2"]').hover({ force: true });
+  // await page.locator('css=[data-rfd-drag-handle-draggable-id="2"]').hover({ force: true });
+  // await page.mouse.up();
+  await page.locator('css=[data-rfd-drag-handle-draggable-id="1"]').dragTo(page.locator('css=[data-rfd-drag-handle-draggable-id="2"]', {
+    force: true,
+    sourcePosition: { x: 100, y: 50 },
+    targetPosition: { x: 100, y: 50 },
+  }));
+
+  const sourceTaskData = await tasksTab.getTaskDataByTitle('Task 1');
+  const targetTaskData = await tasksTab.getTaskDataByTitle('Task 2');
+
+  await expect(sourceTaskData.status).toEqual('To Review');
+  await expect(targetTaskData.status).toEqual('To Review');
+});
+
+// test('test drag and drop', async ({ page }) => {
+//   await page.goto('https://commitquality.com/practice-drag-and-drop');
+//   const sourceBox = await page.getByTestId('small-box');
+//   const targetBox = await page.getByTestId('large-box');
+//   // await sourceBox.dragTo(targetBox);
+//   await sourceBox.hover({ force: true });
+//   await page.mouse.down();
+//   await targetBox.hover({ force: true });
+//   await targetBox.hover({ force: true });
+//   await page.mouse.up();
+
+//   await expect(targetBox).toHaveText('Success!');
+// });
+
 test.describe('should be filtered', () => {
   const statusData = {
     name: 'Testing',
@@ -102,7 +166,7 @@ test.describe('should be filtered', () => {
     await labelsTab.createDefaultLabel(labelData);
     await taskManager.goToTasksTab();
     await tasksTab.createDefaultTask(taskData);
-    await taskManager.goToTasksTab();
+    // await taskManager.goToTasksTab();
   });
   test('by assignee', async () => {
     await tasksTab.filters.filterByAssignee(taskData.assigneeEmail);
@@ -142,8 +206,5 @@ test.describe('should be filtered', () => {
     const filteredTaskData = await tasksTab.getTaskDataByTitle(taskData.title);
     await expect(filteredTaskData.labels).toMatchObject(taskData.labels);
   });
-
-
-
 });
 

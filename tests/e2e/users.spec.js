@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import startApp from './utils';
+import startApp from '../utils';
 
 const userData = {
   firstName: 'Sally',

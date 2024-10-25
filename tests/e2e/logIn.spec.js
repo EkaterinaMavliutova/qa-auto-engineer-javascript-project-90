@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import startApp from './utils';
+import startApp from '../utils';
 
 test('should render logIn form', async ({ page }) => {
   const logInPage = await startApp(page);
