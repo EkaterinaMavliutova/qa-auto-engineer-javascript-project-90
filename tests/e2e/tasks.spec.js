@@ -1,9 +1,5 @@
 import { expect, test } from '@playwright/test';
-import startApp from '../utils';
-
-let logInPage;
-let taskManager;
-let tasksTab;
+import startApp from './utils/utils';
 
 const taskData = {
   title: 'Task 20',
@@ -12,6 +8,10 @@ const taskData = {
   status: 'To Publish',
   labels: ['feature', 'task'],
 };
+
+let logInPage;
+let taskManager;
+let tasksTab;
 
 test.beforeEach(async ({ page }) => {
   logInPage = await startApp(page);
@@ -62,7 +62,7 @@ test('should edit task data', async () => {
   await expect(editedTask.title).toEqual(taskData.title);
 });
 
-test('should be possible to delete users from the table', async () => {
+test('should be possible to delete tasks', async () => {
   const taskToDeleteTitle = 'Task 2';
 
   await tasksTab.deleteTaskByTitle(taskToDeleteTitle);
@@ -71,67 +71,66 @@ test('should be possible to delete users from the table', async () => {
 });
 
 test('should be possible to drag tasks between statuses', async ({ page }) => {
-  // test.setTimeout(100000);
-  // const additionalTaskData = {
-  //   title: 'Task 21',
-  //   assigneeEmail: 'jack@yahoo.com',
-  //   content: 'Task 21 description',
-  //   status: 'Published',
-  //   labels: ['feature', 'task'],
-  // };
-  // await tasksTab.createDefaultTask(taskData);
-  // await taskManager.goToTasksTab();
-  // await tasksTab.createDefaultTask(additionalTaskData);
-  // await taskManager.goToTasksTab();
+  const additionalTaskData = {
+    title: 'Task 21',
+    assigneeEmail: 'jack@yahoo.com',
+    content: 'Task 21 description',
+    status: 'Published',
+    labels: ['feature', 'task'],
+  };
+  await tasksTab.createDefaultTask(taskData);
+  await taskManager.goToTasksTab();
+  await tasksTab.createDefaultTask(additionalTaskData);
+  await taskManager.goToTasksTab();
 
-  // const sourceTask = await tasksTab.findTaskByTitle(taskData.title);
-  // const targetTask = await tasksTab.findTaskByTitle(additionalTaskData.title);
-  // const targetStatus = tasksTab.statuses.filter({ hasText: 'Draft'});
-  // // await sourceTask.dragTo(targetTask, { force: true });
-  // // await sourceTask.dragTo(targetStatus, { force: true });
+  const sourceTask = await tasksTab.findTaskByTitle(taskData.title);
+  const sourceTaskBoundingBox = await sourceTask.boundingBox();
+  const targetStatus = await tasksTab.findStatusByTitle(additionalTaskData.status);
+  const targetStatusBoundingBox = await targetStatus.boundingBox();
+  const sourceCoordinates = {
+    x: sourceTaskBoundingBox.x + sourceTaskBoundingBox.width / 2,
+    y: sourceTaskBoundingBox.y + sourceTaskBoundingBox.height / 2,
+  };
+  const targetCoordinates = {
+    x: (targetStatusBoundingBox.x + targetStatusBoundingBox.width / 2) - sourceCoordinates.x,
+    y: 0,
+  };
+  // await page.mouse.move(sourceCoordinates.x, sourceCoordinates.y);
+  await sourceTask.hover();
+  await page.mouse.down();
+  await page.mouse.move(1, 1);
+  await page.mouse.move(targetCoordinates.x, targetCoordinates.y);
+  await page.mouse.up();
+  await targetStatus.hover();
+  const sourceTaskData = await tasksTab.getTaskDataByTitle(taskData.title);
 
-  // await sourceTask.hover({ force: true });
-  // await page.mouse.down();
-  // await targetStatus.hover({ force: true });
-  // await targetStatus.hover({ force: true });
-  // await page.mouse.up();
-
-  // const sourceTaskData = await tasksTab.getTaskDataByTitle(taskData.title);
-  // const targetTaskData = await tasksTab.getTaskDataByTitle(additionalTaskData.title);
-
-  // await expect(sourceTaskData.status).toEqual(targetTaskData.status);
-  // await expect(targetTaskData.status).toEqual(additionalTaskData.status);
-
-  // await page.locator('css=[data-rfd-drag-handle-draggable-id="1"]').hover({ force: true });
-  // await page.mouse.down();
-  // await page.locator('css=[data-rfd-drag-handle-draggable-id="2"]').hover({ force: true });
-  // await page.locator('css=[data-rfd-drag-handle-draggable-id="2"]').hover({ force: true });
-  // await page.mouse.up();
-  await page.locator('css=[data-rfd-drag-handle-draggable-id="1"]').dragTo(page.locator('css=[data-rfd-drag-handle-draggable-id="2"]', {
-    force: true,
-    sourcePosition: { x: 100, y: 50 },
-    targetPosition: { x: 100, y: 50 },
-  }));
-
-  const sourceTaskData = await tasksTab.getTaskDataByTitle('Task 1');
-  const targetTaskData = await tasksTab.getTaskDataByTitle('Task 2');
-
-  await expect(sourceTaskData.status).toEqual('To Review');
-  await expect(targetTaskData.status).toEqual('To Review');
+  await expect(sourceTaskData.status).toEqual(additionalTaskData.status);
 });
 
-// test('test drag and drop', async ({ page }) => {
-//   await page.goto('https://commitquality.com/practice-drag-and-drop');
-//   const sourceBox = await page.getByTestId('small-box');
-//   const targetBox = await page.getByTestId('large-box');
-//   // await sourceBox.dragTo(targetBox);
-//   await sourceBox.hover({ force: true });
+// test('drag and drop', async ({ page }) => {
+//   const sourceTask = await tasksTab.findTaskByTitle('Task 2');
+//   const sourceTaskCoordinates = await sourceTask.boundingBox();
+//   const targetStatus = tasksTab.statuses.filter({ has: page.getByText('Published') })//.locator('css=div[data-rfd-droppable-context-id]');
+//   const targetStatusCoordinates = await targetStatus.boundingBox();
+//   await page.mouse.move(
+//     (sourceTaskCoordinates.x + sourceTaskCoordinates.width / 2),
+//       sourceTaskCoordinates.y + sourceTaskCoordinates.height / 2
+//   );
+//   // зажимаю левую кнопку мыши
 //   await page.mouse.down();
-//   await targetBox.hover({ force: true });
-//   await targetBox.hover({ force: true });
+//   await page.mouse.move(1, 1);
+//   // перемещаю курсор к центру целевого элемента
+//   await page.mouse.move(
+//     (targetStatusCoordinates.x + targetStatusCoordinates.width / 2) - (sourceTaskCoordinates.x + sourceTaskCoordinates.width / 2),
+//     targetStatusCoordinates.y
+//   );
+//   // отпускаю левую кнопку мыши
 //   await page.mouse.up();
-
-//   await expect(targetBox).toHaveText('Success!');
+//   await targetStatus.hover();
+   
+//   const sourceTaskData = await tasksTab.getTaskDataByTitle('Task 2');
+   
+//   await expect(sourceTaskData.status).toBe('Published');
 // });
 
 test.describe('should be filtered', () => {
@@ -207,4 +206,3 @@ test.describe('should be filtered', () => {
     await expect(filteredTaskData.labels).toMatchObject(taskData.labels);
   });
 });
-
