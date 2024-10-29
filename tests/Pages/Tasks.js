@@ -13,6 +13,10 @@ export default class Tasks {
     this.tasks = this.page.getByRole('button').filter({ hasText: /Task/ });
   }
 
+  async findStatusByTitle(statusTitle) {
+    return this.statuses.filter({ has: this.page.getByText(statusTitle) });
+  }
+
   async findTaskByTitle(taskTitle) {
     const title = new RegExp(`^${taskTitle}$`, 'i');
     return await this.page.getByRole('button').filter({ has: this.page.getByText(title) });
@@ -20,7 +24,8 @@ export default class Tasks {
 
   async getTaskDataByTitle(taskTitle) {
     const targetTask = await this.findTaskByTitle(taskTitle);
-    const status = await this.page.locator('css=div.MuiBox-root.css-1xphtog').filter({ has: targetTask }).locator('css=h6').textContent();
+    const status = await this.statuses.filter({ has: targetTask }).locator('css=h6').textContent();
+    // const status = await this.page.locator('css=div.MuiBox-root.css-1xphtog').filter({ has: targetTask }).locator('css=h6').textContent();
     await targetTask.locator(this.showButton).click();
     const id = await this.page.locator('css=span.ra-field-id > span').textContent();
     const assigneeEmail = await this.page.locator('css=div.MuiStack-root > span').getByText(/\w@\w.\w/).textContent();
