@@ -77,4 +77,26 @@ export default class Tasks {
     await newTaskForm.fillInLabel(labels);
     await newTaskForm.saveItem();
   }
+
+  async dragAndDropTask(taskTitle, targetStatusTitle) {
+    const sourceTask = await this.findTaskByTitle(taskTitle);
+    const sourceTaskBoundingBox = await sourceTask.boundingBox();
+    const targetStatus = await this.findStatusByTitle(targetStatusTitle);
+    const targetStatusBoundingBox = await targetStatus.boundingBox();
+    const sourceCoordinates = {
+      x: sourceTaskBoundingBox.x + sourceTaskBoundingBox.width / 2,
+      y: sourceTaskBoundingBox.y + sourceTaskBoundingBox.height / 2,
+    };
+    const targetCoordinates = {
+      x: (targetStatusBoundingBox.x + targetStatusBoundingBox.width / 2) - sourceCoordinates.x,
+      y: 0,
+    };
+    // await page.mouse.move(sourceCoordinates.x, sourceCoordinates.y);
+    await sourceTask.hover();
+    await this.page.mouse.down();
+    await this.page.mouse.move(1, 1);
+    await this.page.mouse.move(targetCoordinates.x, targetCoordinates.y);
+    await this.page.mouse.up();
+    await targetStatus.hover();
+  }
 }
