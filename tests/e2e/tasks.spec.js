@@ -70,7 +70,7 @@ test('should be possible to delete tasks', async () => {
   await expect(await tasksTab.findTaskByTitle(taskToDeleteTitle)).toHaveCount(0);
 });
 
-test('should be possible to drag tasks between statuses', async ({ page }) => {
+test('should be possible to drag tasks between statuses', async () => {
   const additionalTaskData = {
     title: 'Task 21',
     assigneeEmail: 'jack@yahoo.com',
