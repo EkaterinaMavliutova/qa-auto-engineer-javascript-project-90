@@ -83,25 +83,26 @@ test('should be possible to drag tasks between statuses', async ({ page }) => {
   await tasksTab.createDefaultTask(additionalTaskData);
   await taskManager.goToTasksTab();
 
-  const sourceTask = await tasksTab.findTaskByTitle(taskData.title);
-  const sourceTaskBoundingBox = await sourceTask.boundingBox();
-  const targetStatus = await tasksTab.findStatusByTitle(additionalTaskData.status);
-  const targetStatusBoundingBox = await targetStatus.boundingBox();
-  const sourceCoordinates = {
-    x: sourceTaskBoundingBox.x + sourceTaskBoundingBox.width / 2,
-    y: sourceTaskBoundingBox.y + sourceTaskBoundingBox.height / 2,
-  };
-  const targetCoordinates = {
-    x: (targetStatusBoundingBox.x + targetStatusBoundingBox.width / 2) - sourceCoordinates.x,
-    y: 0,
-  };
-  // await page.mouse.move(sourceCoordinates.x, sourceCoordinates.y);
-  await sourceTask.hover();
-  await page.mouse.down();
-  await page.mouse.move(1, 1);
-  await page.mouse.move(targetCoordinates.x, targetCoordinates.y);
-  await page.mouse.up();
-  await targetStatus.hover();
+  await tasksTab.dragAndDropTask(taskData.title, additionalTaskData.status);
+  // const sourceTask = await tasksTab.findTaskByTitle(taskData.title);
+  // const sourceTaskBoundingBox = await sourceTask.boundingBox();
+  // const targetStatus = await tasksTab.findStatusByTitle(additionalTaskData.status);
+  // const targetStatusBoundingBox = await targetStatus.boundingBox();
+  // const sourceCoordinates = {
+  //   x: sourceTaskBoundingBox.x + sourceTaskBoundingBox.width / 2,
+  //   y: sourceTaskBoundingBox.y + sourceTaskBoundingBox.height / 2,
+  // };
+  // const targetCoordinates = {
+  //   x: (targetStatusBoundingBox.x + targetStatusBoundingBox.width / 2) - sourceCoordinates.x,
+  //   y: 0,
+  // };
+  // // await page.mouse.move(sourceCoordinates.x, sourceCoordinates.y);
+  // await sourceTask.hover();
+  // await page.mouse.down();
+  // await page.mouse.move(1, 1);
+  // await page.mouse.move(targetCoordinates.x, targetCoordinates.y);
+  // await page.mouse.up();
+  // await targetStatus.hover();
   const sourceTaskData = await tasksTab.getTaskDataByTitle(taskData.title);
 
   await expect(sourceTaskData.status).toEqual(additionalTaskData.status);
@@ -165,7 +166,7 @@ test.describe('should be filtered', () => {
     await labelsTab.createDefaultLabel(labelData);
     await taskManager.goToTasksTab();
     await tasksTab.createDefaultTask(taskData);
-    // await taskManager.goToTasksTab();
+    await taskManager.goToTasksTab();
   });
   test('by assignee', async () => {
     await tasksTab.filters.filterByAssignee(taskData.assigneeEmail);
