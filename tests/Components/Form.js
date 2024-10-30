@@ -1,8 +1,8 @@
 export default class Form {
   constructor(page, lables) {
     this.page = page;
-    this.saveButton = this.page.getByRole('button', { name: 'SAVE' });
-    this.showItemInfoButton = this.page.getByRole('link', { name: 'SHOW' });
+    this.saveButton = this.page.getByRole('button', { name: /save/i });
+    this.showItemInfoButton = this.page.getByRole('link', { name: /show/i });
 
     lables.forEach((label) => {
       this[label] = this.page.getByLabel(label);
