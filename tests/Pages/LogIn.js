@@ -1,14 +1,14 @@
-import TaskManager from "./TaskManager";
+import BasePage from "./BasePage";
 
 const userData = {
   userName: 'user name',
   password: 'secret',
 };
 
-export default class LogIn {
+export default class LogIn extends BasePage {
   constructor(page) {
-    this.page = page;
-    this.userNameInput = this.page.getByLabel('Username');
+    super(page);
+    this.userNameInput = this.page.getByLabel(/username/i);
     this.passwordInput = this.page.getByLabel(/password/i);
     this.signInButton = this.page.getByRole('button', { name: /sign in/i });
     this.errorMessage = this.page.getByText(/The form is not valid. Please check for errors/i);
@@ -18,8 +18,6 @@ export default class LogIn {
     await this.userNameInput.fill(userData.userName);
     await this.passwordInput.fill(userData.password);
     await this.signInButton.click();
-
-    return new TaskManager(this.page);
   }
 
   async tryToLogIn(whatInputToFill = '') {
@@ -30,7 +28,5 @@ export default class LogIn {
       await this.passwordInput.fill(userData.password);
     }
     await this.signInButton.click();
-
-    return new TaskManager(this.page);
   }
 };

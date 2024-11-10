@@ -1,8 +1,8 @@
+import BasePage from "../Pages/BasePage";
 
-
-export default class Filter {
+export default class Filter extends BasePage {
   constructor(page) {
-    this.page = page;
+    super(page);
     this.assigneeComboBox = this.page.getByRole('comboBox', { name: 'Assignee' });
     this.statusComboBox = this.page.getByRole('comboBox', { name: 'Status' });
     this.labelComboBox = this.page.getByRole('comboBox', { name: 'Label' });

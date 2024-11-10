@@ -1,6 +1,8 @@
-export default class Header {
+import BasePage from "../Pages/BasePage";
+
+export default class Header extends BasePage {
   constructor(page) {
-    this.page = page;
+    super(page);
     this.profileButton = this.page.getByLabel(/profile/i);
     this.profileImage = this.profileButton.locator(this.page.getByRole('img'));
   }

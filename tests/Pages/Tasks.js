@@ -1,16 +1,18 @@
 import Filter from "../Components/Filter";
 import TaskForm from "../Components/TaskForm";
+import BasePage from "./BasePage";
 
-export default class Tasks {
+export default class Tasks extends BasePage {
   constructor(page) {
-    this.page = page;
+    super(page);
     this.createNewTaskButton = this.page.getByLabel('Create', { exact: true });
     this.editButton = this.page.getByRole('link', { name: 'Edit' });
     this.showButton = this.page.getByRole('link', { name: 'Show' });
     this.deleteButton = this.page.getByRole('button', { name: 'DELETE' });
-    this.filters = new Filter(page);
+    this.filters = new Filter(this.page);
     this.statuses = this.page.locator('css=div.MuiBox-root.css-1xphtog');
     this.tasks = this.page.getByRole('button').filter({ hasText: /Task/ });
+    this.form = new TaskForm(this.page);
   }
 
   async findStatusByTitle(statusTitle) {
@@ -25,7 +27,6 @@ export default class Tasks {
   async getTaskDataByTitle(taskTitle) {
     const targetTask = await this.findTaskByTitle(taskTitle);
     const status = await this.statuses.filter({ has: targetTask }).locator('css=h6').textContent();
-    // const status = await this.page.locator('css=div.MuiBox-root.css-1xphtog').filter({ has: targetTask }).locator('css=h6').textContent();
     await targetTask.locator(this.showButton).click();
     const id = await this.page.locator('css=span.ra-field-id > span').textContent();
     const assigneeEmail = await this.page.locator('css=div.MuiStack-root > span').getByText(/\w@\w.\w/).textContent();
@@ -52,15 +53,11 @@ export default class Tasks {
 
   async createNewTask() {
     await this.createNewTaskButton.click();
-
-    return new TaskForm(this.page);
   }
 
   async editTaskByTitle(taskTitle) {
     const targetTask = await this.findTaskByTitle(taskTitle);
     await targetTask.locator(this.editButton).click();
-
-    return new TaskForm(this.page);
   }
 
   async deleteTaskByTitle(taskTitle) {
@@ -70,12 +67,12 @@ export default class Tasks {
   }
 
   async createDefaultTask({ status, assigneeEmail, title, labels }) {
-    const newTaskForm = await this.createNewTask();
-    await newTaskForm.fillInAssignee(assigneeEmail);
-    await newTaskForm.fillInTitle(title);
-    await newTaskForm.fillInStatus(status);
-    await newTaskForm.fillInLabel(labels);
-    await newTaskForm.saveItem();
+    await this.createNewTask();
+    await this.form.fillInAssignee(assigneeEmail);
+    await this.form.fillInTitle(title);
+    await this.form.fillInStatus(status);
+    await this.form.fillInLabel(labels);
+    await this.form.saveItem();
   }
 
   async dragAndDropTask(taskTitle, targetStatusTitle) {
@@ -91,7 +88,6 @@ export default class Tasks {
       x: (targetStatusBoundingBox.x + targetStatusBoundingBox.width / 2) - sourceCoordinates.x,
       y: 0,
     };
-    // await page.mouse.move(sourceCoordinates.x, sourceCoordinates.y);
     await sourceTask.hover();
     await this.page.mouse.down();
     await this.page.mouse.move(1, 1);

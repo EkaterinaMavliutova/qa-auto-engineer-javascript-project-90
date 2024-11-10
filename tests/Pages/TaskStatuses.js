@@ -1,17 +1,20 @@
 import Table from '../Components/Table';
+import BasePage from './BasePage';
+import Form from '../Components/Form';
 
-export default class TaskStatuses {
+export default class TaskStatuses extends BasePage {
   constructor(page) {
-    this.page = page;
-    this.statusesTable = new Table(page);
+    super(page);
+    this.statusesTable = new Table(this.page);
     this.editableFields = ['Name', 'Slug'];
+    this.form = new Form(this.page, this.editableFields);
   }
 
   async createDefaultStatus({ name, slug }) {
-    const newStatusForm = await this.statusesTable.createNewItem(this.editableFields);
+    await this.statusesTable.createNewItem(this.editableFields);
 
-    await newStatusForm.fillInputByLabel('Name', name);
-    await newStatusForm.fillInputByLabel('Slug', slug);
-    await newStatusForm.saveButton.click();
+    await this.form.fillInputByLabel('Name', name);
+    await this.form.fillInputByLabel('Slug', slug);
+    await this.form.saveButton.click();
   }
 }

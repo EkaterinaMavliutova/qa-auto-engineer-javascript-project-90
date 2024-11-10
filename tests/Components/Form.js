@@ -1,6 +1,8 @@
-export default class Form {
+import BasePage from "../Pages/BasePage";
+
+export default class Form extends BasePage {
   constructor(page, lables) {
-    this.page = page;
+    super(page);
     this.saveButton = this.page.getByRole('button', { name: /save/i });
     this.showItemInfoButton = this.page.getByRole('link', { name: /show/i });
 

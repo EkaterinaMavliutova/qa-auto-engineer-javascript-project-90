@@ -1,26 +1,21 @@
-import { expect, test } from '@playwright/test';
-import startApp from './utils/utils';
+import { expect } from '@playwright/test';
+import { test } from '../fixtures/fixtures';
 
 const labelData = {
   name: 'New',
 };
 
-let logInPage;
-let taskManager;
-let labelsTab;
-
-test.beforeEach(async ({ page }) => {
-  logInPage = await startApp(page);
-  taskManager = await logInPage.logIn();
-  labelsTab = await taskManager.goToLabelsTab();
+test.beforeEach(async ({ taskManager: { logInPage, sideBar } }) => {
+  await logInPage.logIn();
+  await sideBar.goToLabelsTab();
 });
 
-test('should content at least 1 task status', async () => {
-  await expect(labelsTab.labelsTable.tableComponent).toBeTruthy();
+test('should content at least 1 task status', async ({ taskManager: { labelsTab } }) => {
+  await expect(labelsTab.labelsTable.table).toBeTruthy();
   await expect.poll(async () => labelsTab.labelsTable.getItemsNumber()).toBeGreaterThan(0);
 });
 
-test('all labels on the page should have "Name"', async () => {
+test('all labels on the page should have "Name"', async ({ taskManager: { labelsTab } }) => {
   const labelsData = await labelsTab.labelsTable.getTableData();
 
   labelsData.forEach((label) => {
@@ -28,7 +23,7 @@ test('all labels on the page should have "Name"', async () => {
   });
 });
 
-test('should be possible to delete labels from the table', async () => {
+test('should be possible to delete labels from the table', async ({ taskManager: { labelsTab } }) => {
   const labelsBefore = await labelsTab.labelsTable.getItemsNumber();
   const labelsToDeleteCount = 2;
 
@@ -44,7 +39,7 @@ test('should be possible to delete labels from the table', async () => {
   await expect(labelsAfter).toBe(labelsBefore - labelsToDeleteCount);
 });
 
-test('should be possible to delete all labels from the table', async () => {
+test('should be possible to delete all labels from the table', async ({ taskManager: { labelsTab } }) => {
   const labelsCount = await labelsTab.labelsTable.getItemsNumber();
 
   await labelsTab.labelsTable.selectAllItems();
@@ -52,16 +47,16 @@ test('should be possible to delete all labels from the table', async () => {
   await expect(selectedLabelsCount).toBe(labelsCount);
   await labelsTab.labelsTable.deletSelectedItems();
 
-  await expect(labelsTab.labelsTable.tableComponent).not.toBeVisible();
+  await expect(labelsTab.labelsTable.table).not.toBeVisible();
 });
 
-test('should create new labels', async () => {
+test('should create new labels', async ({ taskManager: { sideBar, labelsTab } }) => {
   const labelsBefore = await labelsTab.labelsTable.getItemsNumber();
-  const newLabelForm = await labelsTab.labelsTable.createNewItem(labelsTab.editableFields);
+  await labelsTab.labelsTable.createNewItem();
 
-  await newLabelForm.fillInputByLabel('Name', labelData.name);
-  const newLabelId = await newLabelForm.saveItem();
-  await taskManager.goToLabelsTab();
+  await labelsTab.form.fillInputByLabel('Name', labelData.name);
+  const newLabelId = await labelsTab.form.saveItem();
+  await sideBar.goToLabelsTab();
   const labelsAfter = await labelsTab.labelsTable.getItemsNumber();
   const newLabelData = await labelsTab.labelsTable.getItemDataById(newLabelId);
 
@@ -69,17 +64,17 @@ test('should create new labels', async () => {
   await expect(labelsAfter).toBe(labelsBefore + 1);
 });
 
-test('should not create label whithout data', async () => {
-  const newLabelForm = await labelsTab.labelsTable.createNewItem(labelsTab.editableFields);
+test('should not create label whithout data', async ({ taskManager: { labelsTab } }) => {
+  await labelsTab.labelsTable.createNewItem();
 
-  await expect(newLabelForm.saveButton).toBeDisabled();
+  await expect(labelsTab.form.saveButton).toBeDisabled();
 });
 
-test('should edit label data', async () => {
-  const labelEditForm = await labelsTab.labelsTable.editItemById('1', labelsTab.editableFields);
+test('should edit label data', async ({ taskManager: { labelsTab } }) => {
+  await labelsTab.labelsTable.editItemById('1');
 
-  await labelEditForm.fillInputByLabel('Name', labelData.name);
-  await labelEditForm.saveItem();
+  await labelsTab.form.fillInputByLabel('Name', labelData.name);
+  await labelsTab.form.saveItem();
   const editedLabel = await labelsTab.labelsTable.getItemDataById('1');
 
   await expect(editedLabel.Name).toEqual(labelData.name);

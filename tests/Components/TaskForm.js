@@ -1,6 +1,8 @@
-export default class Form {
+import BasePage from "../Pages/BasePage";
+
+export default class TaskForm extends BasePage {
   constructor(page) {
-    this.page = page;
+    super(page);
     this.saveButton = this.page.getByRole('button', { name: 'SAVE' });
     this.showItemInfoButton = this.page.getByRole('link', { name: 'SHOW' });
     this.assigneeSearchList = this.page.getByRole('comboBox', { name: 'Assignee' });
