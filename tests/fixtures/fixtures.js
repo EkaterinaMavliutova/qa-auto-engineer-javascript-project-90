@@ -5,7 +5,7 @@ export const test = base.extend({
   taskManager: async ({ page }, use) => {
     const taskManager = new TaskManager(page);
     await page.goto('/');
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // eslint-disable-next-line
     await use(taskManager);
   },
 });

@@ -39,6 +39,7 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+      'react-hooks/exhaustive-deps': 'warn',
     },
   },
 ]
